@@ -33,9 +33,6 @@ public partial class Player : CharacterBody3D
     public Node3D PlayerHead { get; set; }
     [Export]
     public CollisionShape3D PlayerCollisionBody { get; set; }
-    [Export]
-    public RayCast3D CrouchRaycastAbove { get; set; }
-
 
     //private members
     private const float m_BaseSpeed = 5.0f;
@@ -63,21 +60,8 @@ public partial class Player : CharacterBody3D
     /// <param name="delta"></param>
     public override void _PhysicsProcess(double delta)
     {
-        Velocity = HandlePlayerMovement(Velocity, delta);
         Grounded = IsOnFloor();
-
-        if (!Grounded)
-        {
-            RayCast3D mantleRayBody = GetNode<RayCast3D>("PlayerBodyCollider/RayCastForward");
-            RayCast3D mantleRayHead = GetNode<RayCast3D>("Head/RayCastForward");
-
-            if (mantleRayBody.IsColliding() && !mantleRayHead.IsColliding()) 
-            {
-                //mantleRay.GetCollisionNormal()
-                //mantleRay.GetCollisionPoint();
-            }
-        }
-
+        Velocity = HandlePlayerMovement(Velocity, delta);    
         MoveAndSlide();
 
         //My problem was I was overwriting the entire rotation all the fucking time
@@ -113,14 +97,31 @@ public partial class Player : CharacterBody3D
         // Add the gravity.
         if (!Grounded)
         {
-            velocity += GetGravity() * (float)delta;
+            RayCast3D mantleRayBody = GetNode<RayCast3D>("PlayerBodyCollider/RayCastForward");
+            RayCast3D mantleRayHead = GetNode<RayCast3D>("Head/RayCastForward");
+
+            if (mantleRayBody.IsColliding() && mantleRayHead.IsColliding() && Input.IsActionPressed("jump"))
+            {
+                var climbTween = CreateTween();
+                Vector3 hit = mantleRayHead.GetCollisionPoint();
+                Vector3 dest = new(hit.X, hit.Y, hit.Z + 1f);
+                climbTween.TweenProperty(this, "position", dest, 0.5f);
+                //climbTween.TweenProperty(this, "position", new Vector3(mantleRayHead.GlobalPosition.X, mantleRayHead.GlobalPosition.Y, mantleRayHead.GlobalPosition.Z + 1),0.25f);
+            }
+            else 
+            {
+                velocity += GetGravity() * (float)delta;
+            }
         }
 
         #region jump input
         // Handle Jump.
-        if (Input.IsActionJustPressed("jump") && Grounded)
+        if (Input.IsActionJustPressed("jump"))
         {
-            velocity.Y = JumpVelocity;
+            if (Grounded)
+            {
+                velocity.Y = JumpVelocity;
+            } 
         }
         #endregion
 
@@ -191,6 +192,7 @@ public partial class Player : CharacterBody3D
         #endregion
 
         #region crouching
+        RayCast3D CrouchRaycastAbove = GetNode<RayCast3D>("PlayerBodyCollider/RayCastAbove");
         if (Input.IsActionPressed("crouch"))
         {
             CurrentSpeed = CrouchSpeed;
