@@ -23,10 +23,16 @@ public partial class Player : CharacterBody3D
     public float LookSensitivity = 0.25f;
     [Export]
     public bool Grounded = true;
-
     public bool LeaningLeft = false;
     public bool LeaningRight = false;
 
+    //TEST VALUES
+    [Export]
+    public bool JumpDifferent = false;
+    [Export]
+    public float FallMultiplier = 1.25f;
+    [Export]
+    public float LerpValue = 1.1f;
 
     //Object References
     [Export]
@@ -43,6 +49,7 @@ public partial class Player : CharacterBody3D
     private float m_SmoothLerpValue = 10.0f;
     private float m_LookClampedValue = 90f;
     private float m_LeanAngle = 25f;
+    //private float m_MaxFallMultiplier = 1.25f;
 
     private float _pitch = 0f; // X axis (vertical look)
     private float _yaw = 0f;   // Y axis (horizontal look)
@@ -102,13 +109,24 @@ public partial class Player : CharacterBody3D
 
             if (mantleRayBody.IsColliding() && mantleRayHead.IsColliding() && Input.IsActionPressed("jump"))
             {
-                var climbTween = CreateTween();
                 Vector3 hit = mantleRayHead.GetCollisionPoint();
-                Vector3 dest = new(hit.X, hit.Y, hit.Z + 1f);
-                climbTween.TweenProperty(this, "position", dest, 0.5f);
-                //climbTween.TweenProperty(this, "position", new Vector3(mantleRayHead.GlobalPosition.X, mantleRayHead.GlobalPosition.Y, mantleRayHead.GlobalPosition.Z + 1),0.25f);
+                float normal = mantleRayHead.GetCollisionNormal().Y;
+
+                if (normal > 0)
+                {
+                    Debug.WriteLine(normal);
+                    Vector3 dest = new(hit.X, hit.Y, hit.Z + 1f);
+                    CreateTween().TweenProperty(this, "position", dest, 0.3f);
+                }
             }
-            else 
+
+            if (JumpDifferent) 
+            {
+                Debug.WriteLine("JumpDiff is: " + JumpDifferent);
+                float fallMultiplier = Flerp(1f, FallMultiplier, LerpValue);
+                velocity += GetGravity() * (float)delta * fallMultiplier;
+            }
+            else
             {
                 velocity += GetGravity() * (float)delta;
             }
@@ -241,8 +259,8 @@ public partial class Player : CharacterBody3D
         return velocity;
     }
 
-    //public float Flerp(float start, float end, float t)
-    //{
-    //    return (1 - t) * start + t * end;
-    //}
+    public float Flerp(float start, float end, float t)
+    {
+        return (1 - t) * start + t * end;
+    }
 }
