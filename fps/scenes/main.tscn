@@ -38,6 +38,12 @@ use_collision = true
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_k0juu")
 
+[node name="CSGBox3D3" type="CSGBox3D" parent="environment"]
+transform = Transform3D(0.999991, 0, 0, 0, 4.03354, 0, 0, 0, 0.999991, 0, 5.5138, 19.1138)
+use_collision = true
+size = Vector3(20, 1, 20)
+material = SubResource("StandardMaterial3D_k0juu")
+
 [node name="lighting" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 
@@ -48,18 +54,24 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="lighting"]
 environment = SubResource("Environment_i7141")
 
-[node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("PlayerHead", "PlayerCollisionBody", "CrouchRaycastAbove")]
+[node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("PlayerHead", "PlayerCollisionBody")]
 script = ExtResource("3_tbgi4")
+JumpDifferent = true
+FallMultiplier = 2.0
+LerpValue = 1.5
 PlayerHead = NodePath("Head")
 PlayerCollisionBody = NodePath("PlayerBodyCollider")
-CrouchRaycastAbove = NodePath("PlayerBodyCollider/Crouch_RaycastAbove")
 
 [node name="PlayerBodyCollider" type="CollisionShape3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_tefeu")
 
-[node name="Crouch_RaycastAbove" type="RayCast3D" parent="Player/PlayerBodyCollider"]
+[node name="RayCastAbove" type="RayCast3D" parent="Player/PlayerBodyCollider"]
 target_position = Vector3(0, 2, 0)
+
+[node name="RayCastForward" type="RayCast3D" parent="Player/PlayerBodyCollider"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+target_position = Vector3(0, 1, 0)
 
 [node name="Head" type="Node3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
@@ -67,11 +79,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
 [node name="Camera" type="Camera3D" parent="Player/Head"]
 
 [node name="RayCastRight" type="RayCast3D" parent="Player/Head"]
-transform = Transform3D(-4.37114e-08, -6, 0, 1, -2.62268e-07, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(-4.37114e-08, -6, 0, 1, -2.62268e-07, 0, 0, 0, 6, 0, 0, 0)
 target_position = Vector3(0, -0.1, 0)
 debug_shape_custom_color = Color(0, 0, 0.584314, 1)
 
 [node name="RayCastLeft" type="RayCast3D" parent="Player/Head"]
-transform = Transform3D(-4.37114e-08, -6, 0, 1, -2.62268e-07, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(-4.37114e-08, -6, 0, 1, -2.62268e-07, 0, 0, 0, 6, 0, 0, 0)
 target_position = Vector3(0, 0.1, 0)
 debug_shape_custom_color = Color(0, 0, 0.584314, 1)
+
+[node name="RayCastForward" type="RayCast3D" parent="Player/Head"]
+transform = Transform3D(1, 0, 0, 0, 0.258819, -0.965926, 0, 0.965926, 0.258819, 0, 0, 0)
