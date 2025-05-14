@@ -27,12 +27,8 @@ public partial class Player : CharacterBody3D
     public bool LeaningRight = false;
 
     //TEST VALUES
-    [Export]
-    public bool JumpDifferent = false;
-    [Export]
-    public float FallMultiplier = 1.25f;
-    [Export]
-    public float LerpValue = 1.1f;
+    private float m_FallMultiplier = 1.25f;
+    private float m_JumpLerpValue = 1.1f;
 
     //Object References
     [Export]
@@ -68,11 +64,42 @@ public partial class Player : CharacterBody3D
     public override void _PhysicsProcess(double delta)
     {
         Grounded = IsOnFloor();
-        Velocity = HandlePlayerMovement(Velocity, delta);    
+        Velocity = HandlePlayerMovement(Velocity, delta);
         MoveAndSlide();
 
         //My problem was I was overwriting the entire rotation all the fucking time
         PlayerHead.Rotation = new Vector3(Mathf.DegToRad(_pitch), 0, Mathf.DegToRad(_roll));
+
+        //handling walking into physics objects
+        if (GetSlideCollisionCount() > 0)
+        {
+            var collision = GetLastSlideCollision();
+            if (collision.GetCollider() is PhysicsObject collidedPhysObj)
+            {
+                var force = 1f;
+                switch (collidedPhysObj.LiftWeight)
+                {
+                    case ILiftable.Weight.Light:
+                        force = force * 0.6f;
+                        Console.WriteLine("Light");
+                        break;
+                    case ILiftable.Weight.Medium:
+                        force = force * 0.4f;
+                        Console.WriteLine("Medium");
+                        break;
+                    case ILiftable.Weight.Heavy:
+                        force = force * 0.2f;
+                        Console.WriteLine("Heavy");
+                        break;
+                }
+
+                var direction = -collision.GetNormal();
+                var speed = Mathf.Clamp(Velocity.Length(), 1f, 8f);
+                PhysicsObject collided = (PhysicsObject)collision.GetCollider();
+                var impulse_pos = collision.GetPosition() - collided.GlobalPosition;          
+                collided.ApplyImpulse(direction * speed * force, impulse_pos);
+            }
+        }
     }
 
     /// <summary>
@@ -120,16 +147,8 @@ public partial class Player : CharacterBody3D
                 }
             }
 
-            if (JumpDifferent) 
-            {
-                Debug.WriteLine("JumpDiff is: " + JumpDifferent);
-                float fallMultiplier = Flerp(1f, FallMultiplier, LerpValue);
-                velocity += GetGravity() * (float)delta * fallMultiplier;
-            }
-            else
-            {
-                velocity += GetGravity() * (float)delta;
-            }
+            //velocity += GetGravity() * (float)delta
+            velocity += GetGravity() * (float)delta * Flerp(1f, m_FallMultiplier, m_JumpLerpValue);
         }
 
         #region jump input
