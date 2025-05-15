@@ -8,7 +8,7 @@ public partial class Player : CharacterBody3D
 {
     //Movement Values
     [Export]
-    public float JumpVelocity = 4.5f;
+    public float JumpVelocity = 4.8f;
     [Export]
     public float CurrentSpeed = 5.0f;
     [Export]
@@ -26,13 +26,11 @@ public partial class Player : CharacterBody3D
     public bool LeaningLeft = false;
     public bool LeaningRight = false;
 
-    //TEST VALUES
-    private float m_FallMultiplier = 1.25f;
-    private float m_JumpLerpValue = 1.1f;
-
     //Object References
     [Export]
     public Node3D PlayerHead { get; set; }
+    [Export]
+    public Node3D HeldObject { get; set; }
     [Export]
     public CollisionShape3D PlayerCollisionBody { get; set; }
 
@@ -45,8 +43,8 @@ public partial class Player : CharacterBody3D
     private float m_SmoothLerpValue = 10.0f;
     private float m_LookClampedValue = 90f;
     private float m_LeanAngle = 25f;
-    //private float m_MaxFallMultiplier = 1.25f;
-
+    private float m_FallMultiplier = 1.3f;
+    private float m_JumpLerpValue = 1.5f;
     private float _pitch = 0f; // X axis (vertical look)
     private float _yaw = 0f;   // Y axis (horizontal look)
     private float _roll = 0f;  // Z axis (lean)
@@ -94,9 +92,9 @@ public partial class Player : CharacterBody3D
                 }
 
                 var direction = -collision.GetNormal();
-                var speed = Mathf.Clamp(Velocity.Length(), 1f, 8f);
+                var speed = Mathf.Clamp(Velocity.Length(), 1f, 2f); //was 8F max
                 PhysicsObject collided = (PhysicsObject)collision.GetCollider();
-                var impulse_pos = collision.GetPosition() - collided.GlobalPosition;          
+                var impulse_pos = collision.GetPosition() - collided.GlobalPosition;
                 collided.ApplyImpulse(direction * speed * force, impulse_pos);
             }
         }
@@ -128,20 +126,49 @@ public partial class Player : CharacterBody3D
         Vector2 inputDir = Input.GetVector("left", "right", "forward", "back");
         m_direction = m_direction.Lerp((Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized(), (float)delta * m_SmoothLerpValue);
 
-        // Add the gravity.
+        //interactions
+        if (Input.IsActionJustPressed("interact"))
+        {
+            {   //picking up shit
+                RayCast3D pickupRayCast = GetNode<RayCast3D>("Head/PickupPoint/PickupRayCast");
+                var collider = pickupRayCast.GetCollider();
+                if (pickupRayCast.IsColliding() && collider is PhysicsObject rigidBody)
+                {
+                    Debug.WriteLine("lift");
+                    HeldObject = rigidBody;
+                    rigidBody.IsLifted = true;
+                    rigidBody.PickupPoint = GetNode<Node3D>("Head/PickupPoint");
+                }
+                else 
+                {
+                    if (HeldObject != null)
+                    {
+                        if (HeldObject is PhysicsObject heldObject && heldObject.IsLifted)
+                        {
+                            heldObject.IsLifted = false;
+                            heldObject.PickupPoint = null;
+                            heldObject.Sleeping = true;
+                            heldObject.Sleeping = false;
+                        }
+                        HeldObject = null;
+                    }
+                }
+            }       
+        }
+
+        // Add the gravity + handle mantling in mid-air
         if (!Grounded)
         {
             RayCast3D mantleRayBody = GetNode<RayCast3D>("PlayerBodyCollider/RayCastForward");
             RayCast3D mantleRayHead = GetNode<RayCast3D>("Head/RayCastForward");
 
-            if (mantleRayBody.IsColliding() && mantleRayHead.IsColliding() && Input.IsActionPressed("jump"))
+            if (mantleRayBody.IsColliding() && mantleRayHead.IsColliding() && Input.IsActionPressed("jump") && !Input.IsActionPressed("crouch"))
             {
                 Vector3 hit = mantleRayHead.GetCollisionPoint();
                 float normal = mantleRayHead.GetCollisionNormal().Y;
 
                 if (normal > 0)
                 {
-                    Debug.WriteLine(normal);
                     Vector3 dest = new(hit.X, hit.Y, hit.Z + 1f);
                     CreateTween().TweenProperty(this, "position", dest, 0.3f);
                 }
