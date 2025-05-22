@@ -7,22 +7,16 @@ using System.Diagnostics;
 public partial class Player : CharacterBody3D
 {
     //Movement Values
-    [Export]
-    public float JumpVelocity = 4.8f;
-    [Export]
-    public float CurrentSpeed = 5.0f;
-    [Export]
-    public float SprintSpeed = 10.0f;
-    [Export]
-    public float BackpedalSpeed = 3.0f;
-    [Export]
-    public float CrouchSpeed = 3.0f;
-    [Export]
-    public float PlayerHeight = 1.8f;
-    [Export]
-    public float LookSensitivity = 0.25f;
-    [Export]
-    public bool Grounded = true;
+    [Export] public float JumpVelocity = 4.8f;
+    [Export] public float CurrentSpeed = 5.0f;
+    [Export] public float SprintSpeed = 10.0f;
+    [Export] public float BackpedalSpeed = 3.0f;
+    [Export] public float CrouchSpeed = 3.0f;
+    [Export] public float PlayerHeight = 1.8f;
+    [Export] public float LookSensitivity = 0.25f;
+    [Export] public bool Grounded = true;
+    [Export] public float Mass = 80.0f;
+    [Export] public float PushForceScalar = 5.0f;
     public bool LeaningLeft = false;
     public bool LeaningRight = false;
 
@@ -63,41 +57,42 @@ public partial class Player : CharacterBody3D
     {
         Grounded = IsOnFloor();
         Velocity = HandlePlayerMovement(Velocity, delta);
+        PushAwayRigidBodies();
         MoveAndSlide();
 
         //My problem was I was overwriting the entire rotation all the fucking time
         PlayerHead.Rotation = new Vector3(Mathf.DegToRad(_pitch), 0, Mathf.DegToRad(_roll));
 
         //handling walking into physics objects
-        if (GetSlideCollisionCount() > 0)
-        {
-            var collision = GetLastSlideCollision();
-            if (collision.GetCollider() is PhysicsObject collidedPhysObj)
-            {
-                var force = 1f;
-                switch (collidedPhysObj.LiftWeight)
-                {
-                    case ILiftable.Weight.Light:
-                        force = force * 0.6f;
-                        Console.WriteLine("Light");
-                        break;
-                    case ILiftable.Weight.Medium:
-                        force = force * 0.4f;
-                        Console.WriteLine("Medium");
-                        break;
-                    case ILiftable.Weight.Heavy:
-                        force = force * 0.2f;
-                        Console.WriteLine("Heavy");
-                        break;
-                }
+        //if (GetSlideCollisionCount() > 0)
+        //{
+        //    var collision = GetLastSlideCollision();
+        //    if (collision.GetCollider() is PhysicsObject collidedPhysObj)
+        //    {
+        //        var force = 1f;
+        //        switch (collidedPhysObj.LiftWeight)
+        //        {
+        //            case ILiftable.Weight.Light:
+        //                force = force * 0.6f;
+        //                Console.WriteLine("Light");
+        //                break;
+        //            case ILiftable.Weight.Medium:
+        //                force = force * 0.4f;
+        //                Console.WriteLine("Medium");
+        //                break;
+        //            case ILiftable.Weight.Heavy:
+        //                force = force * 0.2f;
+        //                Console.WriteLine("Heavy");
+        //                break;
+        //        }
 
-                var direction = -collision.GetNormal();
-                var speed = Mathf.Clamp(Velocity.Length(), 1f, 2f); //was 8F max
-                PhysicsObject collided = (PhysicsObject)collision.GetCollider();
-                var impulse_pos = collision.GetPosition() - collided.GlobalPosition;
-                collided.ApplyImpulse(direction * speed * force, impulse_pos);
-            }
-        }
+        //        var direction = -collision.GetNormal();
+        //        var speed = Mathf.Clamp(Velocity.Length(), 1f, 2f); //was 8F max
+        //        PhysicsObject collided = (PhysicsObject)collision.GetCollider();
+        //        var impulse_pos = collision.GetPosition() - collided.GlobalPosition;
+        //        collided.ApplyImpulse(direction * speed * force, impulse_pos);
+        //    }
+        //}
     }
 
     /// <summary>
@@ -124,6 +119,7 @@ public partial class Player : CharacterBody3D
         // Get the input direction and handle the movement/deceleration.
         // As good practice, you should replace UI actions with custom gameplay actions.
         Vector2 inputDir = Input.GetVector("left", "right", "forward", "back");
+        Vector3 velocityBackup = velocity;
         m_direction = m_direction.Lerp((Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized(), (float)delta * m_SmoothLerpValue);
 
         //interactions
@@ -132,14 +128,15 @@ public partial class Player : CharacterBody3D
             {   //picking up shit
                 RayCast3D pickupRayCast = GetNode<RayCast3D>("Head/PickupPoint/PickupRayCast");
                 var collider = pickupRayCast.GetCollider();
-                if (pickupRayCast.IsColliding() && collider is PhysicsObject rigidBody)
+                if (pickupRayCast.IsColliding() && collider is PhysicsObject rigidBody && !rigidBody.IsLifted)
                 {
-                    Debug.WriteLine("lift");
                     HeldObject = rigidBody;
+                    rigidBody.FreezeMode = RigidBody3D.FreezeModeEnum.Kinematic;
+                    rigidBody.Freeze = true;
                     rigidBody.IsLifted = true;
                     rigidBody.PickupPoint = GetNode<Node3D>("Head/PickupPoint");
                 }
-                else 
+                else
                 {
                     if (HeldObject != null)
                     {
@@ -149,11 +146,12 @@ public partial class Player : CharacterBody3D
                             heldObject.PickupPoint = null;
                             heldObject.Sleeping = true;
                             heldObject.Sleeping = false;
+                            heldObject.Freeze = false;
                         }
                         HeldObject = null;
                     }
                 }
-            }       
+            }
         }
 
         // Add the gravity + handle mantling in mid-air
@@ -162,7 +160,10 @@ public partial class Player : CharacterBody3D
             RayCast3D mantleRayBody = GetNode<RayCast3D>("PlayerBodyCollider/RayCastForward");
             RayCast3D mantleRayHead = GetNode<RayCast3D>("Head/RayCastForward");
 
-            if (mantleRayBody.IsColliding() && mantleRayHead.IsColliding() && Input.IsActionPressed("jump") && !Input.IsActionPressed("crouch"))
+            if (mantleRayBody.IsColliding() 
+                && mantleRayHead.IsColliding() && Input.IsActionPressed("jump") 
+                && !Input.IsActionPressed("crouch")
+                && mantleRayHead.GetCollider() is not RigidBody3D rigidBody)
             {
                 Vector3 hit = mantleRayHead.GetCollisionPoint();
                 float normal = mantleRayHead.GetCollisionNormal().Y;
@@ -308,5 +309,44 @@ public partial class Player : CharacterBody3D
     public float Flerp(float start, float end, float t)
     {
         return (1 - t) * start + t * end;
+    }
+
+    private void PushAwayRigidBodies()
+    {
+        for (int i = 0; i < GetSlideCollisionCount(); i++)
+        {
+            KinematicCollision3D collision = GetSlideCollision(i);
+            if (collision.GetCollider() is not RigidBody3D rigidBody)
+                continue;
+
+            Vector3 collisionNormal = collision.GetNormal();
+
+            // Skip mostly vertical surfaces (e.g., top of boxes)
+            if (collisionNormal.Y > 0.7f)
+                continue;
+
+            float massRatio = Mathf.Min(1.0f, Mass / rigidBody.Mass);
+            if (massRatio < 0.25f)
+                continue;
+
+            Vector3 pushDir = -collisionNormal;
+            pushDir.Y = 0;
+            pushDir = pushDir.Normalized();
+
+            Vector3 playerHorizontalVelocity = new Vector3(Velocity.X, 0, Velocity.Z);
+            float relativeVelocity = playerHorizontalVelocity.Dot(pushDir) - rigidBody.LinearVelocity.Dot(pushDir);
+            if (relativeVelocity <= 0.0f)
+                continue;
+
+            float pushForce = massRatio * PushForceScalar;
+            float maxImpulse = 50.0f;
+
+            Vector3 impulse = pushDir * Mathf.Clamp(relativeVelocity * pushForce, 0, maxImpulse);
+
+            Vector3 localContactPoint = collision.GetPosition() - rigidBody.GlobalPosition;
+            localContactPoint.Y = 0; // Prevent vertical torque
+
+            rigidBody.ApplyImpulse(impulse, localContactPoint);
+        }
     }
 }

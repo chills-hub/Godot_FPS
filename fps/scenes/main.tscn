@@ -75,6 +75,7 @@ material = SubResource("StandardMaterial3D_k0juu")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0442772, 1.59614, -5.83273)
 collision_layer = 4
 collision_mask = 6
+mass = 10.0
 script = ExtResource("2_tbgi4")
 RigidBody = NodePath(".")
 
@@ -87,6 +88,7 @@ shape = SubResource("BoxShape3D_sugp2")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8007, 1.59614, -5.83273)
 collision_layer = 4
 collision_mask = 6
+mass = 20.0
 script = ExtResource("2_tbgi4")
 LiftWeight = 1
 RigidBody = NodePath(".")
@@ -100,6 +102,7 @@ shape = SubResource("BoxShape3D_sugp2")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.67551, 1.59614, -5.83273)
 collision_layer = 4
 collision_mask = 6
+mass = 30.0
 script = ExtResource("2_tbgi4")
 LiftWeight = 2
 RigidBody = NodePath(".")
@@ -120,7 +123,6 @@ shadow_enabled = true
 environment = SubResource("Environment_i7141")
 
 [node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("PlayerHead", "PlayerCollisionBody")]
-transform = Transform3D(1, 0, 0, 0, 0.998219, -0.0596548, 0, 0.0596548, 0.998219, 0, 0, 0)
 collision_mask = 6
 script = ExtResource("3_tbgi4")
 PlayerHead = NodePath("Head")

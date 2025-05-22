@@ -28,10 +28,12 @@ public partial class PhysicsObject : RigidBody3D, ILiftable
             Vector3 updatedRotation = new Vector3(GlobalRotation.X, PickupPoint.GlobalRotation.Y, PickupPoint.GlobalRotation.Z);
             GlobalRotation = updatedRotation;
             CollisionLayer = 0;
+            SetCollisionMaskValue(1, false);
         }
         else 
         {
             CollisionLayer = 3;
+            SetCollisionMaskValue(1, true);
             GetNode<CsgBox3D>("CSGBox3D").Transparency = 0f;
         }
     }
