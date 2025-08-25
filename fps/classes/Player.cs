@@ -15,8 +15,12 @@ public partial class Player : CharacterBody3D
     [Export] public float PlayerHeight = 1.8f;
     [Export] public float LookSensitivity = 0.25f;
     [Export] public bool Grounded = true;
+    [Export] public bool Jumped = false;
+    [Export] public bool DoubleJumped = false;
+    [Export] public bool CanGlide = false;
     [Export] public float Mass = 80.0f;
     [Export] public float PushForceScalar = 5.0f;
+    [Export] public bool Lifting = false;
     public bool LeaningLeft = false;
     public bool LeaningRight = false;
 
@@ -33,12 +37,14 @@ public partial class Player : CharacterBody3D
     private Vector3 m_direction = Vector3.Zero;
     private float m_CrouchHeight;
     private float m_LeanDistance = 1f;
+    private float m_LeanWeight = 12f;
     private float m_StrafeLeanDistance = 2.5f;
     private float m_SmoothLerpValue = 10.0f;
     private float m_LookClampedValue = 90f;
     private float m_LeanAngle = 25f;
     private float m_FallMultiplier = 1.3f;
     private float m_JumpLerpValue = 1.5f;
+    private float m_TargetRoll = 0f;
     private float _pitch = 0f; // X axis (vertical look)
     private float _yaw = 0f;   // Y axis (horizontal look)
     private float _roll = 0f;  // Z axis (lean)
@@ -62,37 +68,6 @@ public partial class Player : CharacterBody3D
 
         //My problem was I was overwriting the entire rotation all the fucking time
         PlayerHead.Rotation = new Vector3(Mathf.DegToRad(_pitch), 0, Mathf.DegToRad(_roll));
-
-        //handling walking into physics objects
-        //if (GetSlideCollisionCount() > 0)
-        //{
-        //    var collision = GetLastSlideCollision();
-        //    if (collision.GetCollider() is PhysicsObject collidedPhysObj)
-        //    {
-        //        var force = 1f;
-        //        switch (collidedPhysObj.LiftWeight)
-        //        {
-        //            case ILiftable.Weight.Light:
-        //                force = force * 0.6f;
-        //                Console.WriteLine("Light");
-        //                break;
-        //            case ILiftable.Weight.Medium:
-        //                force = force * 0.4f;
-        //                Console.WriteLine("Medium");
-        //                break;
-        //            case ILiftable.Weight.Heavy:
-        //                force = force * 0.2f;
-        //                Console.WriteLine("Heavy");
-        //                break;
-        //        }
-
-        //        var direction = -collision.GetNormal();
-        //        var speed = Mathf.Clamp(Velocity.Length(), 1f, 2f); //was 8F max
-        //        PhysicsObject collided = (PhysicsObject)collision.GetCollider();
-        //        var impulse_pos = collision.GetPosition() - collided.GlobalPosition;
-        //        collided.ApplyImpulse(direction * speed * force, impulse_pos);
-        //    }
-        //}
     }
 
     /// <summary>
@@ -120,38 +95,24 @@ public partial class Player : CharacterBody3D
         // As good practice, you should replace UI actions with custom gameplay actions.
         Vector2 inputDir = Input.GetVector("left", "right", "forward", "back");
         Vector3 velocityBackup = velocity;
+        //m_TargetRoll = 0;
         m_direction = m_direction.Lerp((Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized(), (float)delta * m_SmoothLerpValue);
+
+        if (Grounded)
+        {
+            if (!(inputDir.X < 0) || !(inputDir.X > 0))
+            {
+                m_TargetRoll = 0;
+            }
+            Jumped = false;
+            DoubleJumped = false;
+            CanGlide = false;
+        }
 
         //interactions
         if (Input.IsActionJustPressed("interact"))
         {
-            {   //picking up shit
-                RayCast3D pickupRayCast = GetNode<RayCast3D>("Head/PickupPoint/PickupRayCast");
-                var collider = pickupRayCast.GetCollider();
-                if (pickupRayCast.IsColliding() && collider is PhysicsObject rigidBody && !rigidBody.IsLifted)
-                {
-                    HeldObject = rigidBody;
-                    rigidBody.FreezeMode = RigidBody3D.FreezeModeEnum.Kinematic;
-                    rigidBody.Freeze = true;
-                    rigidBody.IsLifted = true;
-                    rigidBody.PickupPoint = GetNode<Node3D>("Head/PickupPoint");
-                }
-                else
-                {
-                    if (HeldObject != null)
-                    {
-                        if (HeldObject is PhysicsObject heldObject && heldObject.IsLifted)
-                        {
-                            heldObject.IsLifted = false;
-                            heldObject.PickupPoint = null;
-                            heldObject.Sleeping = true;
-                            heldObject.Sleeping = false;
-                            heldObject.Freeze = false;
-                        }
-                        HeldObject = null;
-                    }
-                }
-            }
+
         }
 
         // Add the gravity + handle mantling in mid-air
@@ -172,11 +133,22 @@ public partial class Player : CharacterBody3D
                 {
                     Vector3 dest = new(hit.X, hit.Y, hit.Z + 1f);
                     CreateTween().TweenProperty(this, "position", dest, 0.3f);
+                    m_TargetRoll = m_StrafeLeanDistance;
                 }
             }
 
-            //velocity += GetGravity() * (float)delta
-            velocity += GetGravity() * (float)delta * Flerp(1f, m_FallMultiplier, m_JumpLerpValue);
+            if (!Input.IsActionJustPressed("jump"))
+            {
+                velocity += GetGravity() * (float)delta * Flerp(1f, m_FallMultiplier, m_JumpLerpValue);
+            }
+            
+            //hovering kinda
+            if (!Grounded && CanGlide && Input.IsActionPressed("jump"))
+            {
+                velocity *= 0.75f;
+            }
+
+
         }
 
         #region jump input
@@ -186,7 +158,18 @@ public partial class Player : CharacterBody3D
             if (Grounded)
             {
                 velocity.Y = JumpVelocity;
-            } 
+                Jumped = true;
+            }
+            else if (!DoubleJumped && !Grounded 
+                && Jumped && Input.IsActionJustPressed("jump")) 
+            {
+               velocity.Y = JumpVelocity;
+               DoubleJumped = true;
+            }
+            else if (DoubleJumped)
+            {
+                CanGlide = true;
+            }
         }
         #endregion
 
@@ -195,17 +178,16 @@ public partial class Player : CharacterBody3D
         bool leaningLeftInput = Input.IsActionPressed("lean_left");
         bool leaningRightInput = Input.IsActionPressed("lean_right");
 
-        float targetRoll = 0f;
         float targetX = 0f;
 
         if (inputDir.X < 0)
         {
-            targetRoll = m_StrafeLeanDistance;
+            m_TargetRoll = m_StrafeLeanDistance;
         }
 
         if (inputDir.X > 0)
         {
-            targetRoll = -m_StrafeLeanDistance;
+            m_TargetRoll = -m_StrafeLeanDistance;
         }
   
         if (leaningLeftInput || leaningRightInput)
@@ -229,7 +211,7 @@ public partial class Player : CharacterBody3D
 
                 if (!ray.IsColliding())
                 {
-                    targetRoll = m_LeanAngle;
+                    m_TargetRoll = m_LeanAngle;
                 }
             }
 
@@ -246,14 +228,14 @@ public partial class Player : CharacterBody3D
 
                 if (!ray.IsColliding())
                 {
-                    targetRoll = -m_LeanAngle;
+                    m_TargetRoll = -m_LeanAngle;
                 }
             }
         }
       
         Vector3 leanTarget = new Vector3(targetX, PlayerHead.Position.Y, PlayerHead.Position.Z);
-        PlayerHead.Position = PlayerHead.Position.Lerp(leanTarget, (float)(delta * 12));
-        _roll = Mathf.Lerp(_roll, targetRoll, (float)(delta * m_SmoothLerpValue));
+        PlayerHead.Position = PlayerHead.Position.Lerp(leanTarget, (float)(delta * m_LeanWeight));
+        _roll = Mathf.Lerp(_roll, m_TargetRoll, (float)(delta * m_SmoothLerpValue));
         #endregion
 
         #region crouching
