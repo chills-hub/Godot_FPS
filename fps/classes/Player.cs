@@ -4,23 +4,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 
-public partial class Player : CharacterBody3D
+public partial class Player : Character
 {
-    //Movement Values
-    [Export] public float JumpVelocity = 4.8f;
-    [Export] public float CurrentSpeed = 5.0f;
-    [Export] public float SprintSpeed = 10.0f;
-    [Export] public float BackpedalSpeed = 3.0f;
-    [Export] public float CrouchSpeed = 3.0f;
-    [Export] public float PlayerHeight = 1.8f;
     [Export] public float LookSensitivity = 0.25f;
-    [Export] public bool Grounded = true;
-    [Export] public bool Jumped = false;
+    [Export] public float JumpVelocity = 4.8f;
+    [Export] public float CrouchSpeed = 3.0f;
+    [Export] public float CrouchHeight;
+    [Export] public float LeanDistance = 1f;
+    [Export] public float LeanWeight = 12f;
+    [Export] public float LeanAngle = 25f;
+    [Export] public float FallMultiplier = 1.3f;
+    [Export] public float BaseSpeed = 5.0f;
     [Export] public bool DoubleJumped = false;
-    [Export] public bool CanGlide = false;
-    [Export] public float Mass = 80.0f;
-    [Export] public float PushForceScalar = 5.0f;
-    [Export] public bool Lifting = false;
+    [Export] public bool CanGlide = true;
+
     public bool LeaningLeft = false;
     public bool LeaningRight = false;
 
@@ -28,21 +25,13 @@ public partial class Player : CharacterBody3D
     [Export]
     public Node3D PlayerHead { get; set; }
     [Export]
-    public Node3D HeldObject { get; set; }
-    [Export]
     public CollisionShape3D PlayerCollisionBody { get; set; }
 
     //private members
-    private const float m_BaseSpeed = 5.0f;
     private Vector3 m_direction = Vector3.Zero;
-    private float m_CrouchHeight;
-    private float m_LeanDistance = 1f;
-    private float m_LeanWeight = 12f;
     private float m_StrafeLeanDistance = 2.5f;
     private float m_SmoothLerpValue = 10.0f;
     private float m_LookClampedValue = 90f;
-    private float m_LeanAngle = 25f;
-    private float m_FallMultiplier = 1.3f;
     private float m_JumpLerpValue = 1.5f;
     private float m_TargetRoll = 0f;
     private float _pitch = 0f; // X axis (vertical look)
@@ -52,7 +41,14 @@ public partial class Player : CharacterBody3D
     public override void _Ready()
     {
         Input.MouseMode = Input.MouseModeEnum.Captured;
-        m_CrouchHeight = PlayerHeight / 2;
+
+        CurrentSpeed = 5.0f;
+        SprintSpeed = 10.0f;
+        BackpedalSpeed = 3.0f;
+        Height = 1.8f;
+        CrouchHeight = Height / 2;
+        Grounded = true;
+        Jumped = false;
     }
 
     /// <summary>
@@ -61,9 +57,8 @@ public partial class Player : CharacterBody3D
     /// <param name="delta"></param>
     public override void _PhysicsProcess(double delta)
     {
-        Grounded = IsOnFloor();
+        base._PhysicsProcess(delta);
         Velocity = HandlePlayerMovement(Velocity, delta);
-        PushAwayRigidBodies();
         MoveAndSlide();
 
         //My problem was I was overwriting the entire rotation all the fucking time
@@ -94,9 +89,7 @@ public partial class Player : CharacterBody3D
         // Get the input direction and handle the movement/deceleration.
         // As good practice, you should replace UI actions with custom gameplay actions.
         Vector2 inputDir = Input.GetVector("left", "right", "forward", "back");
-        Vector3 velocityBackup = velocity;
-        //m_TargetRoll = 0;
-        m_direction = m_direction.Lerp((Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized(), (float)delta * m_SmoothLerpValue);
+        m_direction = GetMovingDirection(Transform.Basis, m_direction, m_SmoothLerpValue, (float)delta, inputDir.X, inputDir.Y);
 
         if (Grounded)
         {
@@ -104,6 +97,7 @@ public partial class Player : CharacterBody3D
             {
                 m_TargetRoll = 0;
             }
+
             Jumped = false;
             DoubleJumped = false;
             CanGlide = false;
@@ -115,31 +109,13 @@ public partial class Player : CharacterBody3D
 
         }
 
-        // Add the gravity + handle mantling in mid-air
         if (!Grounded)
         {
-            RayCast3D mantleRayBody = GetNode<RayCast3D>("PlayerBodyCollider/RayCastForward");
-            RayCast3D mantleRayHead = GetNode<RayCast3D>("Head/RayCastForward");
-
-            if (mantleRayBody.IsColliding() 
-                && mantleRayHead.IsColliding() && Input.IsActionPressed("jump") 
-                && !Input.IsActionPressed("crouch")
-                && mantleRayHead.GetCollider() is not RigidBody3D rigidBody)
-            {
-                Vector3 hit = mantleRayHead.GetCollisionPoint();
-                float normal = mantleRayHead.GetCollisionNormal().Y;
-
-                if (normal > 0)
-                {
-                    Vector3 dest = new(hit.X, hit.Y, hit.Z + 1f);
-                    CreateTween().TweenProperty(this, "position", dest, 0.3f);
-                    m_TargetRoll = m_StrafeLeanDistance;
-                }
-            }
+            EvaluateMantle();
 
             if (!Input.IsActionJustPressed("jump"))
             {
-                velocity += GetGravity() * (float)delta * Flerp(1f, m_FallMultiplier, m_JumpLerpValue);
+                velocity += GetGravity() * (float)delta * Flerp(1f, FallMultiplier, m_JumpLerpValue);
             }
             
             //hovering kinda
@@ -147,34 +123,29 @@ public partial class Player : CharacterBody3D
             {
                 velocity *= 0.75f;
             }
-
-
         }
 
-        #region jump input
-        // Handle Jump.
         if (Input.IsActionJustPressed("jump"))
         {
-            if (Grounded)
-            {
-                velocity.Y = JumpVelocity;
-                Jumped = true;
-            }
-            else if (!DoubleJumped && !Grounded 
-                && Jumped && Input.IsActionJustPressed("jump")) 
-            {
-               velocity.Y = JumpVelocity;
-               DoubleJumped = true;
-            }
-            else if (DoubleJumped)
-            {
-                CanGlide = true;
-            }
+            velocity = EvaluateJump(velocity);
         }
-        #endregion
 
-        #region leaning + strafe cam roll
-        // Handle leaning inputs
+        EvaluateLeaning(inputDir, delta);
+        _roll = Mathf.Lerp(_roll, m_TargetRoll, (float)(delta * m_SmoothLerpValue));
+
+        EvaluateCrouch(delta);
+
+        if (Input.IsActionPressed("back"))
+        {
+            //move slower when backwards
+            CurrentSpeed = BackpedalSpeed;
+        }
+
+        return GetMovement(m_direction, velocity);
+    }
+
+    private void EvaluateLeaning(Vector2 inputDir, double delta) 
+    {
         bool leaningLeftInput = Input.IsActionPressed("lean_left");
         bool leaningRightInput = Input.IsActionPressed("lean_right");
 
@@ -189,7 +160,7 @@ public partial class Player : CharacterBody3D
         {
             m_TargetRoll = -m_StrafeLeanDistance;
         }
-  
+
         if (leaningLeftInput || leaningRightInput)
         {
             RayCast3D ray;
@@ -205,13 +176,13 @@ public partial class Player : CharacterBody3D
                 collisionDistance = ray.GlobalTransform.Origin.DistanceTo(ray.GetCollisionPoint()); ;
                 rayTotalDist = ray.Scale.X;
                 offset = rayTotalDist - collisionDistance;
-                correctedDistance = (m_LeanDistance - offset);
-                correctedDistance = Mathf.Clamp(correctedDistance, 0, m_LeanDistance);
+                correctedDistance = (LeanDistance - offset);
+                correctedDistance = Mathf.Clamp(correctedDistance, 0, LeanDistance);
                 targetX = -correctedDistance;
 
                 if (!ray.IsColliding())
                 {
-                    m_TargetRoll = m_LeanAngle;
+                    m_TargetRoll = LeanAngle;
                 }
             }
 
@@ -222,37 +193,80 @@ public partial class Player : CharacterBody3D
                 collisionDistance = ray.GlobalTransform.Origin.DistanceTo(ray.GetCollisionPoint()); ;
                 rayTotalDist = ray.Scale.X;
                 offset = rayTotalDist - collisionDistance;
-                correctedDistance = (m_LeanDistance - offset);
-                correctedDistance = Mathf.Clamp(correctedDistance, 0, m_LeanDistance);
+                correctedDistance = (LeanDistance - offset);
+                correctedDistance = Mathf.Clamp(correctedDistance, 0, LeanDistance);
                 targetX = correctedDistance;
 
                 if (!ray.IsColliding())
                 {
-                    m_TargetRoll = -m_LeanAngle;
+                    m_TargetRoll = -LeanAngle;
                 }
             }
         }
-      
-        Vector3 leanTarget = new Vector3(targetX, PlayerHead.Position.Y, PlayerHead.Position.Z);
-        PlayerHead.Position = PlayerHead.Position.Lerp(leanTarget, (float)(delta * m_LeanWeight));
-        _roll = Mathf.Lerp(_roll, m_TargetRoll, (float)(delta * m_SmoothLerpValue));
-        #endregion
 
-        #region crouching
+        Vector3 leanTarget = new Vector3(targetX, PlayerHead.Position.Y, PlayerHead.Position.Z);
+        PlayerHead.Position = PlayerHead.Position.Lerp(leanTarget, (float)(delta * LeanWeight));
+    }
+
+    private void EvaluateMantle() 
+    {
+        RayCast3D mantleRayBody = GetNode<RayCast3D>("PlayerBodyCollider/RayCastForward");
+        RayCast3D mantleRayHead = GetNode<RayCast3D>("Head/RayCastForward");
+
+        if (mantleRayBody.IsColliding()
+            && mantleRayHead.IsColliding() && Input.IsActionPressed("jump")
+            && !Input.IsActionPressed("crouch")
+            && mantleRayHead.GetCollider() is not RigidBody3D rigidBody)
+        {
+            Vector3 hit = mantleRayHead.GetCollisionPoint();
+            float normal = mantleRayHead.GetCollisionNormal().Y;
+
+            if (normal > 0)
+            {
+                Vector3 dest = new(hit.X, hit.Y, hit.Z + 1f);
+                CreateTween().TweenProperty(this, "position", dest, 0.3f);
+                m_TargetRoll = m_StrafeLeanDistance;
+            }
+        }
+    }
+
+    private Vector3 EvaluateJump(Vector3 velocity)
+    {
+        if (Grounded)
+        {
+            velocity.Y = JumpVelocity;
+            Jumped = true;
+        }
+        else if (!DoubleJumped && !Grounded
+            && Jumped && Input.IsActionJustPressed("jump"))
+        {
+            velocity.Y = JumpVelocity;
+            DoubleJumped = true;
+        }
+        else if (DoubleJumped)
+        {
+            CanGlide = true;
+        }
+
+        return velocity;
+    }
+
+    private void EvaluateCrouch(double delta)
+    {
         RayCast3D CrouchRaycastAbove = GetNode<RayCast3D>("PlayerBodyCollider/RayCastAbove");
         if (Input.IsActionPressed("crouch"))
         {
             CurrentSpeed = CrouchSpeed;
-            PlayerHead.Position = PlayerHead.Position.Lerp((new Vector3(PlayerHead.Position.X, m_CrouchHeight, PlayerHead.Position.Z)), (float)(delta * m_SmoothLerpValue));
-            PlayerCollisionBody.Shape.Set("height", m_CrouchHeight);
+            PlayerHead.Position = PlayerHead.Position.Lerp((new Vector3(PlayerHead.Position.X, CrouchHeight, PlayerHead.Position.Z)), (float)(delta * m_SmoothLerpValue));
+            PlayerCollisionBody.Shape.Set("height", CrouchHeight);
             CrouchRaycastAbove.Enabled = true;
         }
         else
         {
             if (!CrouchRaycastAbove.IsColliding())
             {
-                PlayerHead.Position = PlayerHead.Position.Lerp((new Vector3(PlayerHead.Position.X, PlayerHeight, PlayerHead.Position.Z)), (float)(delta * m_SmoothLerpValue));
-                PlayerCollisionBody.Shape.Set("height", PlayerHeight);
+                PlayerHead.Position = PlayerHead.Position.Lerp((new Vector3(PlayerHead.Position.X, Height, PlayerHead.Position.Z)), (float)(delta * m_SmoothLerpValue));
+                PlayerCollisionBody.Shape.Set("height", Height);
                 CrouchRaycastAbove.Enabled = false;
 
                 if (Input.IsActionPressed("sprint"))
@@ -261,74 +275,14 @@ public partial class Player : CharacterBody3D
                 }
                 else
                 {
-                    CurrentSpeed = m_BaseSpeed;
+                    CurrentSpeed = BaseSpeed;
                 }
             }
         }
-        #endregion
-
-        if (Input.IsActionPressed("back"))
-        {
-            //move slower when backwards
-            CurrentSpeed = BackpedalSpeed;
-        }
-
-        if (m_direction != Vector3.Zero)
-        {
-            velocity.X = m_direction.X * CurrentSpeed;
-            velocity.Z = m_direction.Z * CurrentSpeed;
-        }
-        else
-        {
-            //small amount of slide when stopping
-            velocity.X = Mathf.MoveToward(Velocity.X, 0, CurrentSpeed);
-            velocity.Z = Mathf.MoveToward(Velocity.Z, 0, CurrentSpeed);
-        }
-
-        return velocity;
     }
 
     public float Flerp(float start, float end, float t)
     {
         return (1 - t) * start + t * end;
-    }
-
-    private void PushAwayRigidBodies()
-    {
-        for (int i = 0; i < GetSlideCollisionCount(); i++)
-        {
-            KinematicCollision3D collision = GetSlideCollision(i);
-            if (collision.GetCollider() is not RigidBody3D rigidBody)
-                continue;
-
-            Vector3 collisionNormal = collision.GetNormal();
-
-            // Skip mostly vertical surfaces (e.g., top of boxes)
-            if (collisionNormal.Y > 0.7f)
-                continue;
-
-            float massRatio = Mathf.Min(1.0f, Mass / rigidBody.Mass);
-            if (massRatio < 0.25f)
-                continue;
-
-            Vector3 pushDir = -collisionNormal;
-            pushDir.Y = 0;
-            pushDir = pushDir.Normalized();
-
-            Vector3 playerHorizontalVelocity = new Vector3(Velocity.X, 0, Velocity.Z);
-            float relativeVelocity = playerHorizontalVelocity.Dot(pushDir) - rigidBody.LinearVelocity.Dot(pushDir);
-            if (relativeVelocity <= 0.0f)
-                continue;
-
-            float pushForce = massRatio * PushForceScalar;
-            float maxImpulse = 50.0f;
-
-            Vector3 impulse = pushDir * Mathf.Clamp(relativeVelocity * pushForce, 0, maxImpulse);
-
-            Vector3 localContactPoint = collision.GetPosition() - rigidBody.GlobalPosition;
-            localContactPoint.Y = 0; // Prevent vertical torque
-
-            rigidBody.ApplyImpulse(impulse, localContactPoint);
-        }
     }
 }
