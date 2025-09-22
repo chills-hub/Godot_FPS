@@ -1,6 +1,4 @@
 using Godot;
-using System.Diagnostics;
-using static Godot.TextServer;
 
 public partial class Character : CharacterBody3D
 {

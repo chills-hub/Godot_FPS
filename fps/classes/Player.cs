@@ -1,8 +1,4 @@
 using Godot;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 
 public partial class Player : Character
 {
@@ -61,7 +57,6 @@ public partial class Player : Character
         Velocity = HandlePlayerMovement(Velocity, delta);
         MoveAndSlide();
 
-        //My problem was I was overwriting the entire rotation all the fucking time
         PlayerHead.Rotation = new Vector3(Mathf.DegToRad(_pitch), 0, Mathf.DegToRad(_roll));
     }
 
