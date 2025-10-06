@@ -14,6 +14,11 @@ config/name="FPS"
 config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GameManager="*res://Managers/GameManager.cs"
+UserInterfaceManager="*res://Managers/UserInterfaceManager.cs"
+
 [dotnet]
 
 project/assembly_name="FPS"

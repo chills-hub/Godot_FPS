@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cngua8wviie2x"]
 
 [ext_resource type="Texture2D" uid="uid://dt8vd2dr2ocij" path="res://assets/textures/Sprout Lands - UI Pack - Basic pack/Sprite sheets/Sprite sheet for Basic Pack.png" id="1_lnark"]
-[ext_resource type="Script" uid="uid://dbaoabu3edpuy" path="res://classes/PopupDialogue/PopupDialogueContainer.cs" id="1_xi3s1"]
+[ext_resource type="Script" uid="uid://dbaoabu3edpuy" path="res://UILogic/PopupDialogue/PopupDialogueContainer.cs" id="1_xi3s1"]
 
 [node name="BaseUI_InGame" type="Control"]
 layout_mode = 3
@@ -11,7 +11,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Popup_Dialogue_Container" type="MarginContainer" parent="."]
+[node name="PopupDialogueContainer" type="MarginContainer" parent="." node_paths=PackedStringArray("MainDialogueWindow")]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -19,19 +20,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_xi3s1")
+MainDialogueWindow = NodePath("VBoxContainer")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Popup_Dialogue_Container"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PopupDialogueContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
 theme_override_constants/separation = 50
 
-[node name="Dialogue_Box" type="MarginContainer" parent="Popup_Dialogue_Container/VBoxContainer"]
+[node name="Dialogue_Box" type="MarginContainer" parent="PopupDialogueContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Background" type="NinePatchRect" parent="Popup_Dialogue_Container/VBoxContainer/Dialogue_Box"]
+[node name="Background" type="NinePatchRect" parent="PopupDialogueContainer/VBoxContainer/Dialogue_Box"]
 texture_filter = 1
 custom_minimum_size = Vector2(500, 200)
 layout_mode = 2
@@ -42,16 +44,16 @@ patch_margin_top = 4
 patch_margin_right = 4
 patch_margin_bottom = 5
 
-[node name="MarginContainer" type="MarginContainer" parent="Popup_Dialogue_Container/VBoxContainer/Dialogue_Box"]
+[node name="MarginContainer" type="MarginContainer" parent="PopupDialogueContainer/VBoxContainer/Dialogue_Box"]
 layout_mode = 2
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 30
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 30
 
-[node name="Text" type="RichTextLabel" parent="Popup_Dialogue_Container/VBoxContainer/Dialogue_Box/MarginContainer"]
+[node name="Text" type="RichTextLabel" parent="PopupDialogueContainer/VBoxContainer/Dialogue_Box/MarginContainer"]
 layout_mode = 2
 text = "This is a test "
 
-[node name="Margin" type="Control" parent="Popup_Dialogue_Container/VBoxContainer"]
+[node name="Margin" type="Control" parent="PopupDialogueContainer/VBoxContainer"]
 layout_mode = 2

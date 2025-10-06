@@ -1,7 +1,11 @@
+using GameLogic;
 using Godot;
 
 public partial class Player : Character
 {
+    [Signal]
+    public delegate void InteractEventHandler();
+
     [Export] public float LookSensitivity = 0.25f;
     [Export] public float JumpVelocity = 4.8f;
     [Export] public float CrouchSpeed = 3.0f;
@@ -79,6 +83,19 @@ public partial class Player : Character
         base._Input(@event);
     }
 
+    private void HandleInteraction() 
+    {
+        RayCast3D rayForward = GetNode<RayCast3D>("PlayerBodyCollider/RayCastForward");
+
+        if (rayForward.IsColliding() && rayForward.GetCollider() is IInteractable interactee) 
+        {
+            if (interactee.CanInteract) 
+            {
+                EmitSignal(SignalName.Interact);
+            }
+        }
+    }
+
     private Vector3 HandlePlayerMovement(Vector3 velocity, double delta)
     {
         // Get the input direction and handle the movement/deceleration.
@@ -101,7 +118,7 @@ public partial class Player : Character
         //interactions
         if (Input.IsActionJustPressed("interact"))
         {
-
+            HandleInteraction();
         }
 
         if (!Grounded)
@@ -276,7 +293,7 @@ public partial class Player : Character
         }
     }
 
-    public float Flerp(float start, float end, float t)
+    public static float Flerp(float start, float end, float t)
     {
         return (1 - t) * start + t * end;
     }
