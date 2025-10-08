@@ -1,3 +1,5 @@
+using FPS.GameLogic.Player;
+using FPS.Managers;
 using GameLogic;
 using Godot;
 
@@ -17,6 +19,7 @@ public partial class Player : Character
     [Export] public float BaseSpeed = 5.0f;
     [Export] public bool DoubleJumped = false;
     [Export] public bool CanGlide = true;
+    [Export] public PlayerState PlayerState = PlayerState.Normal;
 
     public bool LeaningLeft = false;
     public bool LeaningRight = false;
@@ -62,6 +65,16 @@ public partial class Player : Character
         MoveAndSlide();
 
         PlayerHead.Rotation = new Vector3(Mathf.DegToRad(_pitch), 0, Mathf.DegToRad(_roll));
+
+        if (PlayerState == PlayerState.Conversation) 
+        {
+            Vector3 point = GameManager.Instance.InteracteeLocation;
+            if (this.Position.DistanceTo(point) > 5)
+            {
+                UserInterfaceManager.Instance.PopupDialogueContainer.Hide();
+                PlayerState = PlayerState.Normal;
+            }
+        }
     }
 
     /// <summary>
@@ -89,9 +102,12 @@ public partial class Player : Character
 
         if (rayForward.IsColliding() && rayForward.GetCollider() is IInteractable interactee) 
         {
+            GameManager.Instance.InteracteeLocation = rayForward.GetCollisionPoint();
+
             if (interactee.CanInteract) 
             {
                 EmitSignal(SignalName.Interact);
+                PlayerState = PlayerState.Conversation;
             }
         }
     }

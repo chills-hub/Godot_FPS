@@ -1,8 +1,8 @@
 namespace GameLogic;
 
+using FPS.GameLogic.Player;
 using FPS.Managers;
 using Godot;
-using static GameLogic.IInteractable;
 
 public partial class Character : CharacterBody3D, IInteractable
 {
@@ -13,12 +13,14 @@ public partial class Character : CharacterBody3D, IInteractable
     [Export] public bool Grounded;
     [Export] public bool Jumped;
 
-    public bool CanInteract { get; set; } = true;
+    public bool CanInteract { get; set; } = true; //temp value for testing - character is only one thing that can interact with player
+
     public void DoSomething() 
     {
         if (CanInteract) 
         {
-            //UserInterfaceManager.Instance.InGameUI.
+            GD.Print("interacting!");
+            UserInterfaceManager.Instance.MakePopupDialogue();
         }
     }
 
