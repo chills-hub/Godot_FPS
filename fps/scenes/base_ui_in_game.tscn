@@ -11,7 +11,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PopupDialogueContainer" type="MarginContainer" parent="." node_paths=PackedStringArray("MainDialogueWindow")]
+[node name="PopupDialogueContainer" type="MarginContainer" parent="." node_paths=PackedStringArray("MainDialogueWindow", "DisplayedNPCText", "ContainerPlayerChoices")]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -21,6 +21,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_xi3s1")
 MainDialogueWindow = NodePath("VBoxContainer")
+DisplayedNPCText = NodePath("VBoxContainer/Dialogue_Box/MarginContainerNPC/NPCText")
+ContainerPlayerChoices = NodePath("VBoxContainer/Dialogue_Box/MarginContainerPlayer/GridContainer")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PopupDialogueContainer"]
 layout_mode = 2
@@ -44,16 +46,27 @@ patch_margin_top = 4
 patch_margin_right = 4
 patch_margin_bottom = 5
 
-[node name="MarginContainer" type="MarginContainer" parent="PopupDialogueContainer/VBoxContainer/Dialogue_Box"]
+[node name="MarginContainerNPC" type="MarginContainer" parent="PopupDialogueContainer/VBoxContainer/Dialogue_Box"]
 layout_mode = 2
 theme_override_constants/margin_left = 15
-theme_override_constants/margin_top = 30
+theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 30
 
-[node name="Text" type="RichTextLabel" parent="PopupDialogueContainer/VBoxContainer/Dialogue_Box/MarginContainer"]
+[node name="NPCText" type="RichTextLabel" parent="PopupDialogueContainer/VBoxContainer/Dialogue_Box/MarginContainerNPC"]
 layout_mode = 2
-text = "This is a test "
+
+[node name="MarginContainerPlayer" type="MarginContainer" parent="PopupDialogueContainer/VBoxContainer/Dialogue_Box"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 75
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="GridContainer" type="GridContainer" parent="PopupDialogueContainer/VBoxContainer/Dialogue_Box/MarginContainerPlayer"]
+custom_minimum_size = Vector2(500, 200)
+layout_mode = 2
+theme_override_constants/v_separation = 15
 
 [node name="Margin" type="Control" parent="PopupDialogueContainer/VBoxContainer"]
 layout_mode = 2

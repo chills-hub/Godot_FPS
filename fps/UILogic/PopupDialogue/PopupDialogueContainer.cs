@@ -7,6 +7,12 @@ public partial class PopupDialogueContainer : MarginContainer
 	[Export]
 	public VBoxContainer MainDialogueWindow { get; set; }
 
+    [Export]
+    public RichTextLabel DisplayedNPCText { get; set; }
+
+    [Export]
+    public GridContainer ContainerPlayerChoices { get; set; }
+
     [Signal]
     public delegate void SetPopupVisibilityEventHandler();
 

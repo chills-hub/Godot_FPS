@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://ccn8ufphrapcu"]
+[gd_scene load_steps=16 format=3 uid="uid://ccn8ufphrapcu"]
 
 [ext_resource type="Texture2D" uid="uid://crvfo6ji8781l" path="res://assets/textures/dev/grids/Dark/texture_07.png" id="1_sugp2"]
 [ext_resource type="Texture2D" uid="uid://dtrvpkgidc3xm" path="res://assets/hdris/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="2_jyhfs"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cngua8wviie2x" path="res://scenes/base_ui_in_game.tscn" id="4_jyhfs"]
 [ext_resource type="Script" uid="uid://bw4hr0bftwo6u" path="res://Managers/GameManager.cs" id="5_tbgi4"]
 [ext_resource type="Script" uid="uid://bcpd7gt4fe3vo" path="res://Managers/UserInterfaceManager.cs" id="6_tefeu"]
+[ext_resource type="Script" uid="uid://82lw8hekp2ug" path="res://GameLogic/PhysicalObject.cs" id="8_tipki"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k0juu"]
 albedo_texture = ExtResource("1_sugp2")
@@ -28,7 +29,10 @@ glow_enabled = true
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tefeu"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_tipki"]
+
 [node name="world" type="Node3D"]
+transform = Transform3D(1.00007, 0, 0, 0, 1.00007, 0, 0, 0, 1.00007, 0, 0, 0)
 
 [node name="GameManager" type="Node" parent="." node_paths=PackedStringArray("Player")]
 script = ExtResource("5_tbgi4")
@@ -45,42 +49,42 @@ InGameUI = NodePath("../BaseUI_InGame")
 [node name="CSGBox3D" type="CSGBox3D" parent="environment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 use_collision = true
-collision_layer = 2
+collision_layer = 3
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_k0juu")
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="environment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 14)
 use_collision = true
-collision_layer = 2
+collision_layer = 3
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_k0juu")
 
 [node name="CSGBox3D4" type="CSGBox3D" parent="environment"]
 transform = Transform3D(0.0753032, 0, 0, 0, 0.999999, 0, 0, 0, 0.675978, -8.75763, 0.495257, -3.20877)
 use_collision = true
-collision_layer = 2
+collision_layer = 3
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_k0juu")
 
 [node name="CSGBox3D6" type="CSGBox3D" parent="environment"]
 transform = Transform3D(-3.29161e-09, 0, -0.820913, 0, 0.999999, 0, 0.0753032, 0, -3.58833e-08, 0.205921, 0.456138, -9.20037)
 use_collision = true
-collision_layer = 2
+collision_layer = 3
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_k0juu")
 
 [node name="CSGBox3D5" type="CSGBox3D" parent="environment"]
 transform = Transform3D(0.0753032, 0, 0, 0, 0.999999, 0, 0, 0, 0.675978, 9.19612, 0.495257, -3.20877)
 use_collision = true
-collision_layer = 2
+collision_layer = 3
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_k0juu")
 
 [node name="CSGBox3D3" type="CSGBox3D" parent="environment"]
 transform = Transform3D(0.999991, 0, 0, 0, 4.03354, 0, 0, 0, 0.999991, 0, 5.5138, 19.1138)
 use_collision = true
-collision_layer = 2
+collision_layer = 3
 size = Vector3(20, 1, 20)
 material = SubResource("StandardMaterial3D_k0juu")
 
@@ -107,7 +111,9 @@ shadow_enabled = true
 environment = SubResource("Environment_i7141")
 
 [node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("PlayerHead", "PlayerCollisionBody")]
-collision_mask = 6
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.22547)
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("3_tbgi4")
 PlayerHead = NodePath("Head")
 PlayerCollisionBody = NodePath("PlayerBodyCollider")
@@ -123,7 +129,7 @@ collision_mask = 6
 [node name="RayCastForward" type="RayCast3D" parent="Player/PlayerBodyCollider"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
 target_position = Vector3(0, 1, 0)
-collision_mask = 6
+collision_mask = 2
 
 [node name="Head" type="Node3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
@@ -154,3 +160,15 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 
 target_position = Vector3(0, 0.1, 0)
 collision_mask = 6
 hit_from_inside = true
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(0.974337, 0, 0, 0, 0.974337, 0, 0, 0, 0.974337, 0, 0.988391, -3.42795)
+collision_layer = 2
+mass = 50.0
+script = ExtResource("8_tipki")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
+shape = SubResource("BoxShape3D_tipki")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="RigidBody3D"]
+layers = 2
