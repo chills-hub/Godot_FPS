@@ -1,5 +1,6 @@
 namespace GameLogic;
 
+using FPS.GameLogic;
 using FPS.GameLogic.Player;
 using FPS.Managers;
 using Godot;
@@ -14,8 +15,10 @@ public partial class Character : CharacterBody3D, IInteractable
     [Export] public bool Jumped;
 
     public bool CanInteract { get; set; } = true; //temp value for testing - character is only one thing that can interact with player
+    public bool CanLift { get; set; } = false; //temp value - technically if character is uncoscious or dead can be lifted
+    public InteractionType InteractionType { get; set; } = InteractionType.Talk;
 
-    public void DoSomething() 
+    public void DoInteraction() 
     {
         if (CanInteract) 
         {
@@ -27,7 +30,7 @@ public partial class Character : CharacterBody3D, IInteractable
     public override void _Ready()
     {
         base._Ready();
-        GameManager.Instance.Player.Interact += DoSomething;
+        GameManager.Instance.Player.Interact += DoInteraction;
     }
 
     public override void _PhysicsProcess(double delta)

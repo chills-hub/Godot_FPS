@@ -8,6 +8,9 @@ public partial class Player : Character
     [Signal]
     public delegate void InteractEventHandler();
 
+    [Signal]
+    public delegate void PickupObjectEventHandler();
+
     [Export] public float LookSensitivity = 0.25f;
     [Export] public float JumpVelocity = 4.8f;
     [Export] public float CrouchSpeed = 3.0f;
@@ -61,7 +64,7 @@ public partial class Player : Character
     public override void _PhysicsProcess(double delta)
     {
         base._PhysicsProcess(delta);
-        Velocity = HandlePlayerMovement(Velocity, delta);
+        Velocity = HandlePlayerUpdate(Velocity, delta);
         PushAwayRigidBodies();
         MoveAndSlide();
 
@@ -105,15 +108,25 @@ public partial class Player : Character
         {
             GameManager.Instance.InteracteeLocation = rayForward.GetCollisionPoint();
 
+            //will only be btoh in certain situations I imagine - re-examine this logic
             if (interactee.CanInteract)
             {
                 EmitSignal(SignalName.Interact);
                 PlayerState = PlayerState.Conversation;
             }
+            else if (interactee.CanLift)
+            {
+                EmitSignal(SignalName.PickupObject);
+                //PlayerState = PlayerState.HeldObject;
+            }
+            else
+            {
+                PlayerState = PlayerState.Normal;
+            }
         }
     }
 
-    private Vector3 HandlePlayerMovement(Vector3 velocity, double delta)
+    private Vector3 HandlePlayerUpdate(Vector3 velocity, double delta) //rename this, more than just movement
     {
         // Get the input direction and handle the movement/deceleration.
         // As good practice, you should replace UI actions with custom gameplay actions.

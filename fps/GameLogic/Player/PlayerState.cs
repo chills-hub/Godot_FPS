@@ -11,6 +11,7 @@ public enum PlayerState
     Normal = 0,
     Inventory = 1,
     Conversation = 2,
-    None = 3, //do nothing
+    HeldObject = 3,
+    None = 4, //do nothing
 }
 

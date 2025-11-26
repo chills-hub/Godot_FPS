@@ -10,9 +10,11 @@ namespace FPS.GameLogic
 {
     public partial class PhysicalObject : RigidBody3D, IInteractable
     {
-        bool IInteractable.CanInteract { get; set; } = true;
+        bool IInteractable.CanInteract { get; set; } = false;
+        bool IInteractable.CanLift { get; set; } = true; //test value
+        public InteractionType InteractionType { get; set; } = InteractionType.Pickup;
 
-        void IInteractable.DoSomething()
+        void IInteractable.DoInteraction()
         {
             throw new NotImplementedException();
         }
