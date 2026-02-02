@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dhwca7dxuh487"]
+
+[ext_resource type="Script" uid="uid://bcpd7gt4fe3vo" path="res://Managers/UserInterfaceManager.cs" id="1_6ehko"]
+
+[node name="UserInterfaceManager" type="Node" node_paths=PackedStringArray("InGameUI")]
+script = ExtResource("1_6ehko")
+InGameUI = NodePath("")

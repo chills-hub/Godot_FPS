@@ -1,0 +1,58 @@
+[gd_scene load_steps=4 format=3 uid="uid://qol41ovdxk2h"]
+
+[ext_resource type="Script" uid="uid://b60fm1g83b7u7" path="res://GameLogic/Player/Player.cs" id="1_g2els"]
+[ext_resource type="PackedScene" uid="uid://cq4qytfbg24vd" path="res://Managers/interaction_manager.tscn" id="2_qhqgy"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tefeu"]
+
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerHead", "PlayerCollisionBody")]
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1_g2els")
+PlayerHead = NodePath("Head")
+PlayerCollisionBody = NodePath("PlayerBodyCollider")
+
+[node name="InteractionManager" parent="." node_paths=PackedStringArray("InteractionRaycast", "PlayerCamera") instance=ExtResource("2_qhqgy")]
+unique_name_in_owner = true
+InteractionRaycast = NodePath("../Head/Camera/InteractionRaycast")
+PlayerCamera = NodePath("../Head/Camera")
+
+[node name="PlayerBodyCollider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_tefeu")
+
+[node name="RayCastAbove" type="RayCast3D" parent="PlayerBodyCollider"]
+target_position = Vector3(0, 2, 0)
+collision_mask = 6
+
+[node name="RayCastForward" type="RayCast3D" parent="PlayerBodyCollider"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+target_position = Vector3(0, 1, 0)
+collision_mask = 2
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+
+[node name="Camera" type="Camera3D" parent="Head"]
+
+[node name="InteractionRaycast" type="RayCast3D" parent="Head/Camera"]
+target_position = Vector3(0, 0, -2)
+
+[node name="Marker3D" type="Marker3D" parent="Head/Camera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+
+[node name="RayCastRight" type="RayCast3D" parent="Head"]
+transform = Transform3D(-4.37114e-08, -6, 0, 1, -2.62268e-07, 0, 0, 0, 6, 0, 0, 0)
+target_position = Vector3(0, -0.1, 0)
+collision_mask = 6
+debug_shape_custom_color = Color(0, 0, 0.584314, 1)
+
+[node name="RayCastLeft" type="RayCast3D" parent="Head"]
+transform = Transform3D(-4.37114e-08, -6, 0, 1, -2.62268e-07, 0, 0, 0, 6, 0, 0, 0)
+target_position = Vector3(0, 0.1, 0)
+collision_mask = 6
+debug_shape_custom_color = Color(0, 0, 0.584314, 1)
+
+[node name="RayCastForward" type="RayCast3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 0.258819, -0.965926, 0, 0.965926, 0.258819, 0, 0, 0)
+collision_mask = 6

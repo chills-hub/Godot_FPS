@@ -3,28 +3,44 @@
   "WorkspaceRootPath": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\uilogic\\popupdialogue\\popupdialoguecontainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:uilogic\\popupdialogue\\popupdialoguecontainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\gamelogic\\player\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:gamelogic\\player\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\gamelogic\\physicalobject.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:gamelogic\\physicalobject.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\gamelogic\\character.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:gamelogic\\character.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\gamelogic\\iinteractable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:gamelogic\\iinteractable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\managers\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:managers\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\components\\interactioncomponent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:components\\interactioncomponent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\managers\\userinterfacemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:managers\\userinterfacemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\gamelogic\\player\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:gamelogic\\player\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\managers\\interactionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:managers\\interactionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\managers\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:managers\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\gamelogic\\player\\playerstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:gamelogic\\player\\playerstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\uilogic\\playerdialoguechoice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:uilogic\\playerdialoguechoice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|c:\\users\\chill\\documents\\github\\godot_fps\\fps\\uilogic\\popupdialogue\\popupdialoguecontainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B11499EA-7BF1-41EA-AD95-2574607FF334}|FPS.csproj|solutionrelative:uilogic\\popupdialogue\\popupdialoguecontainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,19 +50,58 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "IInteractable.cs",
-              "DocumentMoniker": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\GameLogic\\IInteractable.cs",
-              "RelativeDocumentMoniker": "GameLogic\\IInteractable.cs",
-              "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\GameLogic\\IInteractable.cs",
-              "RelativeToolTip": "GameLogic\\IInteractable.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAYAAAAeAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "InteractionComponent.cs",
+              "DocumentMoniker": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\Components\\InteractionComponent.cs",
+              "RelativeDocumentMoniker": "Components\\InteractionComponent.cs",
+              "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\Components\\InteractionComponent.cs",
+              "RelativeToolTip": "Components\\InteractionComponent.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwA8AAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-06T20:47:46.502Z",
+              "WhenOpened": "2026-02-02T23:12:56.967Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "InteractionManager.cs",
+              "DocumentMoniker": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\Managers\\InteractionManager.cs",
+              "RelativeDocumentMoniker": "Managers\\InteractionManager.cs",
+              "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\Managers\\InteractionManager.cs",
+              "RelativeToolTip": "Managers\\InteractionManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-02T22:49:59.152Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PhysicalObject.cs",
+              "DocumentMoniker": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\GameLogic\\PhysicalObject.cs",
+              "RelativeDocumentMoniker": "GameLogic\\PhysicalObject.cs",
+              "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\GameLogic\\PhysicalObject.cs",
+              "RelativeToolTip": "GameLogic\\PhysicalObject.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAMwAsAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-19T21:28:08.078Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "PlayerState.cs",
+              "DocumentMoniker": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\GameLogic\\Player\\PlayerState.cs",
+              "RelativeDocumentMoniker": "GameLogic\\Player\\PlayerState.cs",
+              "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\GameLogic\\Player\\PlayerState.cs",
+              "RelativeToolTip": "GameLogic\\Player\\PlayerState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwA4AAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-08T21:54:16.93Z",
               "EditorCaption": ""
             },
             {
@@ -57,59 +112,70 @@
               "RelativeDocumentMoniker": "Managers\\UserInterfaceManager.cs",
               "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\Managers\\UserInterfaceManager.cs",
               "RelativeToolTip": "Managers\\UserInterfaceManager.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAbAAAAAAAAAA==",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAcwB8AAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-01T21:36:39.89Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "GameManager.cs",
-              "DocumentMoniker": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\Managers\\GameManager.cs",
-              "RelativeDocumentMoniker": "Managers\\GameManager.cs",
-              "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\Managers\\GameManager.cs",
-              "RelativeToolTip": "Managers\\GameManager.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAADAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-22T21:39:32.222Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "Player.cs",
               "DocumentMoniker": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\GameLogic\\Player\\Player.cs",
               "RelativeDocumentMoniker": "GameLogic\\Player\\Player.cs",
               "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\GameLogic\\Player\\Player.cs",
               "RelativeToolTip": "GameLogic\\Player\\Player.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAH4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-22T21:28:32.198Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 8,
+              "Title": "PlayerDialogueChoice.cs",
+              "DocumentMoniker": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\UILogic\\PlayerDialogueChoice.cs",
+              "RelativeDocumentMoniker": "UILogic\\PlayerDialogueChoice.cs",
+              "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\UILogic\\PlayerDialogueChoice.cs",
+              "RelativeToolTip": "UILogic\\PlayerDialogueChoice.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-30T23:52:35.634Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "GameManager.cs",
+              "DocumentMoniker": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\Managers\\GameManager.cs",
+              "RelativeDocumentMoniker": "Managers\\GameManager.cs",
+              "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\Managers\\GameManager.cs",
+              "RelativeToolTip": "Managers\\GameManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-22T21:39:32.222Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "PopupDialogueContainer.cs",
               "DocumentMoniker": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\UILogic\\PopupDialogue\\PopupDialogueContainer.cs",
               "RelativeDocumentMoniker": "UILogic\\PopupDialogue\\PopupDialogueContainer.cs",
               "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\UILogic\\PopupDialogue\\PopupDialogueContainer.cs",
               "RelativeToolTip": "UILogic\\PopupDialogue\\PopupDialogueContainer.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-22T21:28:04.064Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-22T21:28:04.064Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Character.cs",
               "DocumentMoniker": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\GameLogic\\Character.cs",
               "RelativeDocumentMoniker": "GameLogic\\Character.cs",
               "ToolTip": "C:\\Users\\chill\\Documents\\GitHub\\Godot_FPS\\fps\\GameLogic\\Character.cs",
               "RelativeToolTip": "GameLogic\\Character.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAOAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBEAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-17T21:22:57.953Z",
               "EditorCaption": ""

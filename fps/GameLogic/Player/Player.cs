@@ -1,3 +1,4 @@
+using FPS.GameLogic;
 using FPS.GameLogic.Player;
 using FPS.Managers;
 using GameLogic;
@@ -7,9 +8,6 @@ public partial class Player : Character
 {
     [Signal]
     public delegate void InteractEventHandler();
-
-    [Signal]
-    public delegate void PickupObjectEventHandler();
 
     [Export] public float LookSensitivity = 0.25f;
     [Export] public float JumpVelocity = 4.8f;
@@ -23,6 +21,7 @@ public partial class Player : Character
     [Export] public bool DoubleJumped = false;
     [Export] public bool CanGlide = true;
     [Export] public PlayerState PlayerState = PlayerState.Normal;
+    private GodotObject HeldObject { get; set; }
 
     public bool LeaningLeft = false;
     public bool LeaningRight = false;
@@ -34,6 +33,7 @@ public partial class Player : Character
     public CollisionShape3D PlayerCollisionBody { get; set; }
 
     //private members
+
     private Vector3 m_direction = Vector3.Zero;
     private float m_StrafeLeanDistance = 2.5f;
     private float m_SmoothLerpValue = 10.0f;
@@ -100,29 +100,34 @@ public partial class Player : Character
         base._Input(@event);
     }
 
-    private void HandleInteraction() 
+    private void HandleInteraction() //will probably all change with new interaction system
     {
         RayCast3D rayForward = GetNode<RayCast3D>("PlayerBodyCollider/RayCastForward");
 
-        if (rayForward.IsColliding() && rayForward.GetCollider() is IInteractable interactee)
-        {
-            GameManager.Instance.InteracteeLocation = rayForward.GetCollisionPoint();
+        bool isColliding = rayForward.IsColliding();
+        GodotObject obj = rayForward.GetCollider();
 
-            //will only be btoh in certain situations I imagine - re-examine this logic
-            if (interactee.CanInteract)
-            {
-                EmitSignal(SignalName.Interact);
-                PlayerState = PlayerState.Conversation;
-            }
-            else if (interactee.CanLift)
-            {
-                EmitSignal(SignalName.PickupObject);
-                //PlayerState = PlayerState.HeldObject;
-            }
-            else
-            {
-                PlayerState = PlayerState.Normal;
-            }
+        //if (isColliding && obj is IInteractable interactee)
+        //{
+        //    GameManager.Instance.InteracteeLocation = rayForward.GetCollisionPoint();
+
+        //    //will only be both in certain situations I imagine - re-examine this logic
+        //    if (interactee.CanInteract)
+        //    {
+        //        EmitSignal(SignalName.Interact);
+        //        PlayerState = PlayerState.Conversation;
+        //    }
+        //    else
+        //    {
+        //        PlayerState = PlayerState.Normal;
+        //    }
+        //}
+        if (obj is PhysicalObject physObj && physObj.CanLift)
+        {
+            PlayerState = PlayerState.HeldObject;
+            physObj.IsHeld = true;
+            physObj.HeldPosition = GetNode<Node3D>("Head/PickupPoint").GlobalTransform;
+            this.HeldObject = obj;
         }
     }
 
@@ -352,9 +357,8 @@ public partial class Player : Character
                 // Only count velocity towards push dir, away from character
                 VelocityDiffInPushDir = Mathf.Max(0.0f, VelocityDiffInPushDir);
 
-                PushDir.Y = 0; // Don't push object from above/below
-
                 float PushForce = MassRatio * 5.0f;
+                PushDir.Y = 0; // Don't push object from above/below
                 Obj.ApplyImpulse(PushDir * VelocityDiffInPushDir * PushForce, CollisionData.GetPosition() - Obj.GlobalPosition);
             }
         }

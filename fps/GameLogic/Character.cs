@@ -5,7 +5,7 @@ using FPS.GameLogic.Player;
 using FPS.Managers;
 using Godot;
 
-public partial class Character : CharacterBody3D, IInteractable
+public partial class Character : CharacterBody3D
 {
     [Export] public float CurrentSpeed;
     [Export] public float SprintSpeed;
@@ -15,8 +15,8 @@ public partial class Character : CharacterBody3D, IInteractable
     [Export] public bool Jumped;
 
     public bool CanInteract { get; set; } = true; //temp value for testing - character is only one thing that can interact with player
-    public bool CanLift { get; set; } = false; //temp value - technically if character is uncoscious or dead can be lifted
-    public InteractionType InteractionType { get; set; } = InteractionType.Talk;
+    public bool CanLift { get; set; } = false; //temp value - technically if character is unconscious or dead can be lifted
+    //public InteractionType InteractionType { get; set; } = InteractionType.Talk; //will be replaced by new interactiontype
 
     public void DoInteraction() 
     {
@@ -48,7 +48,7 @@ public partial class Character : CharacterBody3D, IInteractable
     /// <param name="x">x value</param>
     /// <param name="y">y value</param>
     /// <returns></returns>
-    public Vector3 GetMovingDirection(Basis basis, Vector3 direction, float lerpValue, float delta, float x, float y)
+    public static Vector3 GetMovingDirection(Basis basis, Vector3 direction, float lerpValue, float delta, float x, float y)
     {
         return direction.Lerp((basis * new Vector3(x, 0, y)).Normalized(), (float)delta * lerpValue);
     }

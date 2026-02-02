@@ -1,12 +1,12 @@
-[gd_scene load_steps=16 format=3 uid="uid://ccn8ufphrapcu"]
+[gd_scene load_steps=15 format=3 uid="uid://ccn8ufphrapcu"]
 
 [ext_resource type="Texture2D" uid="uid://crvfo6ji8781l" path="res://assets/textures/dev/grids/Dark/texture_07.png" id="1_sugp2"]
+[ext_resource type="PackedScene" uid="uid://bfvj02cxxo8xo" path="res://Managers/game_manager.tscn" id="1_tipki"]
+[ext_resource type="PackedScene" uid="uid://dhwca7dxuh487" path="res://Managers/user_interface_manager.tscn" id="2_85g3d"]
 [ext_resource type="Texture2D" uid="uid://dtrvpkgidc3xm" path="res://assets/hdris/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="2_jyhfs"]
 [ext_resource type="Script" uid="uid://bwdi2tmlacfkh" path="res://GameLogic/Character.cs" id="2_o6xl0"]
-[ext_resource type="Script" uid="uid://b60fm1g83b7u7" path="res://GameLogic/Player/Player.cs" id="3_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://cngua8wviie2x" path="res://scenes/base_ui_in_game.tscn" id="4_jyhfs"]
-[ext_resource type="Script" uid="uid://bw4hr0bftwo6u" path="res://Managers/GameManager.cs" id="5_tbgi4"]
-[ext_resource type="Script" uid="uid://bcpd7gt4fe3vo" path="res://Managers/UserInterfaceManager.cs" id="6_tefeu"]
+[ext_resource type="PackedScene" uid="uid://qol41ovdxk2h" path="res://scenes/player.tscn" id="7_choun"]
 [ext_resource type="Script" uid="uid://82lw8hekp2ug" path="res://GameLogic/PhysicalObject.cs" id="8_tipki"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k0juu"]
@@ -27,20 +27,14 @@ sky = SubResource("Sky_qfnet")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tefeu"]
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_tipki"]
 
 [node name="world" type="Node3D"]
 transform = Transform3D(1.00007, 0, 0, 0, 1.00007, 0, 0, 0, 1.00007, 0, 0, 0)
 
-[node name="GameManager" type="Node" parent="." node_paths=PackedStringArray("Player")]
-script = ExtResource("5_tbgi4")
-Player = NodePath("../Player")
+[node name="GameManager" parent="." instance=ExtResource("1_tipki")]
 
-[node name="UserInterfaceManager" type="Node" parent="." node_paths=PackedStringArray("InGameUI")]
-script = ExtResource("6_tefeu")
-InGameUI = NodePath("../BaseUI_InGame")
+[node name="UserInterfaceManager" parent="." instance=ExtResource("2_85g3d")]
 
 [node name="BaseUI_InGame" parent="." instance=ExtResource("4_jyhfs")]
 
@@ -110,59 +104,11 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="lighting"]
 environment = SubResource("Environment_i7141")
 
-[node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("PlayerHead", "PlayerCollisionBody")]
+[node name="Player" parent="." instance=ExtResource("7_choun")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.22547)
-collision_layer = 2
-collision_mask = 2
-script = ExtResource("3_tbgi4")
-PlayerHead = NodePath("Head")
-PlayerCollisionBody = NodePath("PlayerBodyCollider")
-
-[node name="PlayerBodyCollider" type="CollisionShape3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("CapsuleShape3D_tefeu")
-
-[node name="RayCastAbove" type="RayCast3D" parent="Player/PlayerBodyCollider"]
-target_position = Vector3(0, 2, 0)
-collision_mask = 6
-
-[node name="RayCastForward" type="RayCast3D" parent="Player/PlayerBodyCollider"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
-target_position = Vector3(0, 1, 0)
-collision_mask = 2
-
-[node name="Head" type="Node3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
-
-[node name="Camera" type="Camera3D" parent="Player/Head"]
-
-[node name="RayCastRight" type="RayCast3D" parent="Player/Head"]
-transform = Transform3D(-4.37114e-08, -6, 0, 1, -2.62268e-07, 0, 0, 0, 6, 0, 0, 0)
-target_position = Vector3(0, -0.1, 0)
-collision_mask = 6
-debug_shape_custom_color = Color(0, 0, 0.584314, 1)
-
-[node name="RayCastLeft" type="RayCast3D" parent="Player/Head"]
-transform = Transform3D(-4.37114e-08, -6, 0, 1, -2.62268e-07, 0, 0, 0, 6, 0, 0, 0)
-target_position = Vector3(0, 0.1, 0)
-collision_mask = 6
-debug_shape_custom_color = Color(0, 0, 0.584314, 1)
-
-[node name="RayCastForward" type="RayCast3D" parent="Player/Head"]
-transform = Transform3D(1, 0, 0, 0, 0.258819, -0.965926, 0, 0.965926, 0.258819, 0, 0, 0)
-collision_mask = 6
-
-[node name="PickupPoint" type="Node3D" parent="Player/Head"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, -1.5)
-
-[node name="PickupRayCast" type="RayCast3D" parent="Player/Head/PickupPoint"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
-target_position = Vector3(0, 0.1, 0)
-collision_mask = 6
-hit_from_inside = true
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
-transform = Transform3D(0.974337, 0, 0, 0, 0.974337, 0, 0, 0, 0.974337, 0, 0.988391, -3.42795)
+transform = Transform3D(0.974337, 0, 0, 0, 0.974337, 0, 0, 0, 0.974337, 2.74496, 0.988391, -3.42795)
 collision_layer = 2
 mass = 50.0
 script = ExtResource("8_tipki")
